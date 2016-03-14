@@ -33,11 +33,13 @@ public class Configuration {
 
 	protected static final String TAG_ISSUE = "issue"; 
     protected static final String ATTR_VALUE = "value"; 
+    protected static final String ATTR_NAME = "name";
     protected static final String ATTR_TYPE = "type";
     protected static final String TAG_PATH = "path";
     protected static final String TAG_MVP = "mvp";
     protected static final String TAG_FILE = "file";
     protected static final String TAG_ITEM = "item";
+    protected static final String ATTR_DEFAULT_ITEM = "defualtitem";
     protected static final String ATTR_ID = "id";
 
     protected static final String ATTR_ACTIVE = "isactive"; 
@@ -227,6 +229,13 @@ public class Configuration {
 					}else if(TAG_FILE.equals(tagname)){
 						fragmentModule.filename=moduleName+value+".java";
 						fragmentModule.fragmentname=value;
+					}else if(ATTR_TYPE.equals(tagname)){
+						if("List".equals(value)){
+							fragmentModule.type=FragmentModule.LIST;
+						}
+						fragmentModule.itemname=check.getAttribute(ATTR_NAME);
+						fragmentModule.items = check.getAttribute(TAG_ITEM).split(";");
+						fragmentModule.defaultitems = check.getAttribute(ATTR_DEFAULT_ITEM).split(";");
 					}
 				}
 			}
