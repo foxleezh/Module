@@ -15,6 +15,7 @@
 package com.foxlee;
 
 import com.foxlee.module.FragmentItemModule;
+import com.foxlee.module.FragmentLayoutModule;
 import com.foxlee.module.FragmentModule;
 import com.foxlee.util.TypedValue;
 
@@ -40,8 +41,8 @@ public class Main {
     protected Configuration mConfiguration;
     protected File configFile;
     public String rootDir = "D:\\application\\Dici\\";        //要打包的工程路径
-    public String configDir = rootDir+"tools\\";        //要打包的工程路径
-    public String moduleName="Setting";
+    public String configDir = rootDir + "tools\\";        //要打包的工程路径
+    public String moduleName = "RecommendClose";
 
 
 //    public String rootDir = "";        //要打包的工程路径
@@ -61,50 +62,45 @@ public class Main {
     }
 
     private void createModule() {
-        if(mConfiguration.fragmentModule.isActive){
-            mConfiguration.fragmentModule.presentername =mConfiguration.presenterModule.fragmentname;
-            mConfiguration.fragmentModule.modulemodulename=mConfiguration.moduleModule.fragmentname;
+        if (mConfiguration.fragmentModule.isActive) {
+            mConfiguration.fragmentModule.presentername = mConfiguration.presenterModule.fragmentname;
+            mConfiguration.fragmentModule.modulemodulename = mConfiguration.moduleModule.fragmentname;
             mConfiguration.fragmentModule.write();
-            if(mConfiguration.fragmentModule.type== FragmentModule.LIST){
-                if(mConfiguration.fragmentModule.items.length==0){
-                    FragmentItemModule itemModule=new FragmentItemModule();
-                    itemModule.modulename=moduleName;
-                    itemModule.path=mConfiguration.fragmentLayoutModule.path;
-                    itemModule.l_modulename =moduleName.toLowerCase();
-                    itemModule.filename=mConfiguration.fragmentModule.itemname+moduleName.toLowerCase()+".xml";
+            if (mConfiguration.fragmentModule.type == FragmentModule.LIST) {
+                for (int i = 0; i < mConfiguration.fragmentModule.listItem.undefaultitems.size(); i++) {
+                    FragmentItemModule itemModule = new FragmentItemModule();
+                    itemModule.modulename = moduleName;
+                    itemModule.path = mConfiguration.fragmentLayoutModule.path;
+                    itemModule.l_modulename = moduleName.toLowerCase();
+                    itemModule.filename = mConfiguration.fragmentModule.listItem.undefaultitems.get(i) + ".xml";
                     itemModule.write();
-                }else{
-                    for (int i = 0; i < mConfiguration.fragmentModule.items.length; i++) {
-                        FragmentItemModule itemModule=new FragmentItemModule();
-                        itemModule.modulename=moduleName;
-                        itemModule.path=mConfiguration.fragmentLayoutModule.path;
-                        itemModule.l_modulename =moduleName.toLowerCase();
-                        itemModule.filename=mConfiguration.fragmentModule.itemname+moduleName.toLowerCase()+"_"+mConfiguration.fragmentModule.items[i]+".xml";
-                        itemModule.write();
-                    }
                 }
             }
         }
 
-        if(mConfiguration.presenterModule.isActive){
-            mConfiguration.presenterModule.iviewname=mConfiguration.iViewModule.fragmentname;
-            mConfiguration.presenterModule.iviewpath=mConfiguration.iViewModule.packagename;
+        if (mConfiguration.presenterModule.isActive) {
+            mConfiguration.presenterModule.iviewname = mConfiguration.iViewModule.fragmentname;
+            mConfiguration.presenterModule.iviewpath = mConfiguration.iViewModule.packagename;
 
-            mConfiguration.presenterModule.modulemodulename=mConfiguration.moduleModule.fragmentname;
-            mConfiguration.presenterModule.modulemodulepath=mConfiguration.moduleModule.packagename;
+            mConfiguration.presenterModule.modulemodulename = mConfiguration.moduleModule.fragmentname;
+            mConfiguration.presenterModule.modulemodulepath = mConfiguration.moduleModule.packagename;
 
             mConfiguration.presenterModule.write();
         }
 
-        if(mConfiguration.iViewModule.isActive){
+        if (mConfiguration.iViewModule.isActive) {
             mConfiguration.iViewModule.write();
         }
 
-        if(mConfiguration.moduleModule.isActive){
+        if (mConfiguration.moduleModule.isActive) {
             mConfiguration.moduleModule.write();
         }
 
-        if(mConfiguration.fragmentLayoutModule.isActive){
+        if (mConfiguration.fragmentLayoutModule.isActive) {
+            if (mConfiguration.fragmentModule.type == FragmentModule.LIST) {
+                mConfiguration.fragmentLayoutModule.type= FragmentLayoutModule.LIST;
+                mConfiguration.fragmentLayoutModule.listItem= mConfiguration.fragmentModule.listItem;
+            }
             mConfiguration.fragmentLayoutModule.write();
         }
     }
@@ -172,7 +168,7 @@ public class Main {
                     usage();
                 }
                 rootDir = args[++index];
-            }else if (arg.equals(ARG_NAME)) {
+            } else if (arg.equals(ARG_NAME)) {
                 if (index == args.length - 1) {
                     System.err.println("Missing name argument");
                     usage();

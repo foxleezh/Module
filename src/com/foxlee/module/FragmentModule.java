@@ -10,10 +10,8 @@ public class FragmentModule extends BaseModule{
 
     public String presentername;
     public String modulemodulename;
-    public int type=1;
-    public String[] items;
-    public String[] defaultitems;
-    public String itemname;
+    public int type;
+    public ListItem listItem=new ListItem();
 
     public FragmentModule(){
 
@@ -127,9 +125,12 @@ public class FragmentModule extends BaseModule{
 //        adapter = new MyAdapter(this.getActivity(), list, new MultiItemTypeSupport<MeModule>() {
 //            @Override
 //            public int getLayoutId(int position, MeModule messageBean) {
-//                if(messageBean.itemType==0)
-//                    return R.layout.listitem_me_image;
-//                return R.layout.listitem_no_data;
+//                 switch (messageBean.itemType){
+//                    case 0:
+//                        return R.layout.listitem_me_image;
+//                    default:
+//                        return R.layout.listitem_no_data;
+//    }
 //            }
 //
 //            @Override
@@ -139,9 +140,7 @@ public class FragmentModule extends BaseModule{
 //
 //            @Override
 //            public int getItemViewType(int position, MeModule messageBean) {
-//                if(messageBean.itemType==0)
-//                    return 0;
-//                return 1;
+//                return messageBean.itemType;
 //            }
 //        });
 //        lvMe.setAdapter(adapter);
@@ -176,33 +175,60 @@ public class FragmentModule extends BaseModule{
                 str.append("adapter = new MyAdapter(this.getActivity(), list, new MultiItemTypeSupport<");
                 str.append(modulename);
                 str.append(modulemodulename);
-                str.append(">() {\n\n");
+                str.append(">() {\n");
                 str.append("@Override\n");
                 str.append("public int getLayoutId(int position, ");
                 str.append(modulename);
                 str.append(modulemodulename);
                 str.append(" messageBean) {\n");
 
-                if(items.length==0){
-                    
+                str.append("switch (messageBean.itemType){\n");
 
-                }else{
-
+                for (int i = 0; i < listItem.items.size(); i++) {
+                    if(i==listItem.items.size()-1){
+                        str.append("default :\n");
+                        str.append("return R.layout.");
+                        str.append(listItem.items.get(i));
+                        str.append(";\n");
+                    }else {
+                        str.append("case ");
+                        str.append(i);
+                        str.append(":\n");
+                        str.append("return R.layout.");
+                        str.append(listItem.items.get(i));
+                        str.append(";\n");
+                    }
                 }
+                str.append("}\n");
+                str.append("}\n\n");
 
-                str.append("\n");
-                str.append("\n");
-                str.append("\n");
-                str.append("\n");
-                str.append("\n");
+                str.append("@Override\n");
+                str.append("public int getViewTypeCount() {\n");
+                str.append("return ");
+                str.append(listItem.items.size());
+                str.append(";\n");
+                str.append("}\n\n");
+
+
+                str.append("@Override\n");
+                str.append("public int getItemViewType(int position, ");
+                str.append(modulename);
+                str.append(modulemodulename);
+                str.append(" messageBean) {\n");
+                str.append("return messageBean.itemType;\n");
+                str.append("}\n");
+                str.append("});\n");
+                str.append("lv");
+                str.append(modulename);
+                str.append(".setAdapter(adapter);\n");
+                str.append("adapter.notifyDataSetChanged();\n");
                 break;
             default:
                 break;
         }
 
-        str.append("}");
-        str.append("\n");
 
+        str.append("}\n\n");
 
 
         switch (type){
@@ -232,17 +258,13 @@ public class FragmentModule extends BaseModule{
                 str.append(modulemodulename);
                 str.append(" item) {\n");
                 str.append(" switch (holder.mLayoutId) {\n");
-                for (int i = 0; i < items.length; i++) {
+                for (int i = 0; i < listItem.items.size(); i++) {
                     str.append("case R.layout.");
-                    str.append(itemname);
-                    str.append(l_modulename);
-                    str.append("_");
-                    str.append(items[i]);
+                    str.append(listItem.items.get(i));
                     str.append(":\n");
                     str.append("break;\n");
                 }
-                str.append("case R.layout.listitem_no_data:\n");
-                str.append("break;\n");
+
                 str.append("}\n");
                 str.append("}\n");
                 str.append("}\n");
