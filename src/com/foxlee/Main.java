@@ -40,9 +40,9 @@ public class Main {
 
     protected Configuration mConfiguration;
     protected File configFile;
-    public String rootDir = "D:\\application\\Dici\\";        //要打包的工程路径
+    public String rootDir = "D:\\application\\FinanceQuotes\\";        //要打包的工程路径
     public String configDir = rootDir + "tools\\";        //要打包的工程路径
-    public String moduleName = "RecommendClose";
+    public String moduleName = "Setting";
 
 
 //    public String rootDir = "";        //要打包的工程路径
@@ -70,9 +70,10 @@ public class Main {
                 for (int i = 0; i < mConfiguration.fragmentModule.listItem.undefaultitems.size(); i++) {
                     FragmentItemModule itemModule = new FragmentItemModule();
                     itemModule.modulename = moduleName;
+                    itemModule.type = mConfiguration.fragmentModule.listItem.undefaultitems.get(i).itemtype;
                     itemModule.path = mConfiguration.fragmentLayoutModule.path;
                     itemModule.l_modulename = moduleName.toLowerCase();
-                    itemModule.filename = mConfiguration.fragmentModule.listItem.undefaultitems.get(i) + ".xml";
+                    itemModule.filename = mConfiguration.fragmentModule.listItem.undefaultitems.get(i).itemname + ".xml";
                     itemModule.write();
                 }
             }
@@ -168,13 +169,15 @@ public class Main {
                     usage();
                 }
                 rootDir = args[++index];
-            } else if (arg.equals(ARG_NAME)) {
-                if (index == args.length - 1) {
-                    System.err.println("Missing name argument");
-                    usage();
-                }
-                moduleName = args[++index];
             }
+
+//            else if (arg.equals(ARG_NAME)) {
+//                if (index == args.length - 1) {
+//                    System.err.println("Missing name argument");
+//                    usage();
+//                }
+//                moduleName = args[++index];
+//            }
         }
     }
 

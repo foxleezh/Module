@@ -47,7 +47,7 @@ public class TypedValue {
 
 	public static final String XML_FILE = ".xml";
 	
-	public static final String CONFIG_FILE = "config.xml"; 
+	public static final String CONFIG_FILE = "module_config.xml";
 
 	/** The value contains no data. */
 	public static final int TYPE_NULL = 0x00;

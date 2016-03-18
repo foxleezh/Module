@@ -1,9 +1,11 @@
 
 package com.foxlee;
 
+import com.foxlee.module.FragmentItemModule;
 import com.foxlee.module.FragmentLayoutModule;
 import com.foxlee.module.FragmentModule;
 import com.foxlee.module.IViewModule;
+import com.foxlee.module.ListitemType;
 import com.foxlee.module.ModuleItem;
 import com.foxlee.module.ModuleModule;
 import com.foxlee.module.PresenterModule;
@@ -26,7 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
- * @author shwenzhang
+ * @author foxlee
  */
 public class Configuration {
 
@@ -36,10 +38,12 @@ public class Configuration {
     protected static final String ATTR_TYPE = "type";
     protected static final String TAG_PATH = "path";
     protected static final String TAG_MVP = "mvp";
+    protected static final String TAG_MODULE = "module";
     protected static final String TAG_FILE = "file";
     protected static final String TAG_ITEM = "item";
+    protected static final String TAG_ITEM_TYPE = "itemtype";
     protected static final String ATTR_DEFAULT_ITEM = "defualtitem";
-    protected static final String ATTR_LIST_STYLE = "list_style";
+    protected static final String ATTR_LIST_STYLE = "stylename";
     protected static final String ATTR_ID = "id";
 
     protected static final String ATTR_ACTIVE = "isactive";
@@ -139,29 +143,19 @@ public class Configuration {
                     readProperty(node);
                 } else if (id.equals(FRAGMENT_ISSUE)) {
                     fragmentModule.isActive = active;
-                    if (active) {
                         readFragment(node);
-                    }
                 } else if (id.equals(PRESENTER_ISSUE)) {
                     presenterModule.isActive = active;
-                    if (active) {
                         readPresenter(node);
-                    }
                 } else if (id.equals(IVIEW_ISSUE)) {
                     iViewModule.isActive = active;
-                    if (active) {
                         readIView(node);
-                    }
                 } else if (id.equals(FRAGMENT_LAYOUT_ISSUE)) {
                     fragmentLayoutModule.isActive = active;
-                    if (active) {
                         readFragmentLayout(node);
-                    }
                 } else if (id.equals(MODULE_ISSUE)) {
                     moduleModule.isActive = active;
-                    if (active) {
                         readModule(node);
-                    }
                 }
             }
         } finally {
@@ -194,6 +188,8 @@ public class Configuration {
                     value = value.replace(" ", "");
                     if (TAG_MVP.equals(tagname)) {
                         mvpPackage = value;
+                    }else if (TAG_MODULE.equals(tagname)) {
+                        mClient.moduleName = value;
                     }
                 }
             }
@@ -248,20 +244,33 @@ public class Configuration {
                             fragmentModule.type = FragmentModule.LIST;
                             fragmentModule.listItem.itemname = check.getAttribute(ATTR_NAME);
                             fragmentModule.listItem.stylename = check.getAttribute(ATTR_LIST_STYLE);
+                            fragmentModule.listItem.stylename = check.getAttribute(TAG_ITEM_TYPE);
                             String item = check.getAttribute(TAG_ITEM);
                             String[] defaultitems = check.getAttribute(ATTR_DEFAULT_ITEM).split(";");
                             if ("".equals(item)) {
+                                ListitemType listitemType=new ListitemType();
+                                listitemType.itemname=fragmentModule.listItem.itemname + fragmentModule.l_modulename;
+                                fragmentModule.listItem.undefaultitems.add(listitemType);
                                 fragmentModule.listItem.items.add(fragmentModule.listItem.itemname + fragmentModule.l_modulename);
-                                fragmentModule.listItem.undefaultitems.add(fragmentModule.listItem.itemname + fragmentModule.l_modulename);
                             } else {
                                 String[] items = item.split(";");
                                 for (int i = 0; i < items.length; i++) {
-                                    fragmentModule.listItem.items.add(fragmentModule.listItem.itemname + fragmentModule.l_modulename + "_" + items[i]);
-                                    fragmentModule.listItem.undefaultitems.add(fragmentModule.listItem.itemname + fragmentModule.l_modulename + "_" + items[i]);
+                                    String[] strs=items[i].split(":");
+                                    ListitemType listitemType=new ListitemType();
+                                    listitemType.itemname=fragmentModule.listItem.itemname + fragmentModule.l_modulename + "_" + strs[0];
+                                    if(strs.length>1) {
+                                        if ("textimage".equals(strs[1])){
+                                            listitemType.itemtype= FragmentItemModule.TEXT_IMAGE;
+                                        }else if ("text".equals(strs[1])){
+                                            listitemType.itemtype= FragmentItemModule.TEXT;
+                                        }
+                                    }
+                                    fragmentModule.listItem.undefaultitems.add(listitemType);
+                                    fragmentModule.listItem.items.add(fragmentModule.listItem.itemname + fragmentModule.l_modulename + "_" + strs[0]);
                                 }
                             }
                             for (int i = 0; i < defaultitems.length; i++) {
-                                fragmentModule.listItem.items.add(fragmentModule.listItem.itemname + defaultitems[i]);
+                                fragmentModule.listItem.items.add(defaultitems[i]);
                             }
                         }
                     }
